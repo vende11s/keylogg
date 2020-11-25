@@ -5,8 +5,6 @@
 #define _WIN32_WINNT 0x0500
 #include <Windows.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
 #include <fstream>
 #include <ctime>
 #include <string>
