@@ -1,6 +1,3 @@
-// SPECIAL THANKS 4 EgeBalci, he did 95% of this keylogger
-
-
 
 #define _WIN32_WINNT 0x0500
 #include <Windows.h>
