@@ -1,2 +1,2 @@
-when i rusze dupe there will be keylogger with email sender
+Simple keylogger with autostart, when I rusze dupe it will send email, and xor all logs
 
