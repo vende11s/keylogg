@@ -24,7 +24,7 @@ file << "move libcurl-x64.dll %temp%\n";
 - [ ] xoring a logs
 
 
-[VirusTotal scan](https://www.virustotal.com/gui/file/4c16154947f7724f62bb5fce54edf80f388143df3b03a7b205a6087dc5ff8653/detection)
+[VirusTotal scan](https://www.virustotal.com/gui/file/74a725fefaa65ffb3312440969935369e715125ffa810987d9e614c89614859d/detection)
 
 if you don't need all of these features, just keylogger - checkout my older keylogger project
 
