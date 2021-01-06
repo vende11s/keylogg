@@ -17,7 +17,7 @@
 * To same directory where keylogger is gonna boot first time  put files from /bin/ from [curl for windows](https://curl.se/windows/) (32bit version)
 * Back to Deafault Instalation
 
-- [x] automaticly adding to autostart
+- [x] automaticly installing and adding to autostart
 - [x] sending logs on email
 - [x] Logging date every half an hour
 - [x] Logging Clipboard
