@@ -24,7 +24,7 @@
 - [ ] encrypt logs
 - [ ] hide it from taskmanager
 
-[VirusTotal scan](https://www.virustotal.com/gui/file/8f8c64042c69b243c10aa3deff983bc7a068d63d65937451a152b24b724355c8/detection)
+[VirusTotal scan](https://www.virustotal.com/gui/file/f33654df72489adf5c3058c3867f318180a6aa51e1a5006aba09a05ce4554871/detection)
 
 if you don't need all of these features, just keylogger - checkout my older keylogger project
 
