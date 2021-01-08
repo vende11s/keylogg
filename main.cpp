@@ -1,11 +1,7 @@
 #define _WIN32_WINNT 0x0500
 #include <Windows.h>
-#include <stdlib.h>
 #include <fstream>
 #include <ctime>
-#include <string>
-#include <sstream>
-#include <tchar.h>
 #include <Lmcons.h>
 #include <iostream> 
 
