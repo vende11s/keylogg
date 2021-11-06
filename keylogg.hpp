@@ -23,16 +23,10 @@ const string CHAT_ID = "-1001487776950";
 const int SENDING_FREQUENCY = 1; // in minutes
 
 string GetTime() {
-	time_t t;
-	struct tm* tt;
-	time(&t);
-	tt = localtime(&t);
-	
-	stringstream ss;
-	string s;
-	ss << asctime(tt);
-	ss >> s;
-	return s;
+    time_t now = time(0);
+    tm* gmtm = gmtime(&now);
+    string s = asctime(gmtm);
+    return s;
 }
 
 string url_encode(string value) {
